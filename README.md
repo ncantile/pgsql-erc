@@ -17,7 +17,7 @@ Those information are the following:
 8. Number of unsafe pg_hba.conf entries (with 'trust' as authentication method)
 
 The following is a sample output of the script:  
-> -[ RECORD 1 ]-------+-------  
+> ``-[ RECORD 1 ]-------+-------  
 > current_connections | 7/100  
 > manual_connections  | 1  
 > instance_size       | 491 MB  
@@ -29,5 +29,5 @@ The following is a sample output of the script:
 > users_num           | 2  
 > db_num              | 2  
 > tblsp_num           | 0  
-> trust_hba_entries   | 1  
+> trust_hba_entries   | 1``
 
