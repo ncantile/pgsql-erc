@@ -54,4 +54,5 @@ WITH
     /*this column shows the number of lines in the 'pg_hba.conf' file that are marked
     with the 'trust' authentication method. this value should be 0 for safety reasons*/
 ,z  AS (SELECT COUNT(*) AS trust_hba_entries FROM pg_hba_file_rules WHERE auth_method = 'trust')
+
 SELECT * FROM a,b,q,r,s,t,u,v,w,x,y,z;
