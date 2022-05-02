@@ -44,7 +44,7 @@ WITH
     --this column shows the number of users in the instance. it also counts the default user[s]
 ,w  AS (SELECT COUNT(*) AS users_num FROM pg_user)
 
-    --this column shows the number of databases in the instance. it also counts the default databases
+    --this column shows the number of databases in the instance. it does not count the default databases
 ,x  AS (SELECT COUNT(*) AS db_num FROM pg_database WHERE datname != 'postgres' AND datname NOT LIKE 'template%')
 
     /*this column shows the number of tablespaces in the instance.
@@ -52,6 +52,6 @@ WITH
 ,y  AS (SELECT COUNT(*) AS tblsp_num FROM pg_tablespace WHERE spcname NOT LIKE 'pg_%')
 
     /*this column shows the number of lines in the 'pg_hba.conf' file that are marked
-    with the 'trust' access method. this value should be 0 for safety reasons*/
+    with the 'trust' authentication method. this value should be 0 for safety reasons*/
 ,z  AS (SELECT COUNT(*) AS trust_hba_entries FROM pg_hba_file_rules WHERE auth_method = 'trust')
 SELECT * FROM a,b,q,r,s,t,u,v,w,x,y,z;
