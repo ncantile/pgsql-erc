@@ -3,7 +3,7 @@
 
 # Documentation
 
-## i_info script:
+## i_info script
 
 The `i_info.sql` script returns some information at instance-level.  
 Those information are the following:  
