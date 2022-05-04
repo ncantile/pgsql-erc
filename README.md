@@ -1,11 +1,11 @@
-i_* files are used to retrieve instance-level information  
-d_* files are used to retrieve information related to the current database
+`i_*` files are used to retrieve instance-level information  
+`d_*` files are used to retrieve information related to the current database
 
 # Documentation
 
 ## i_info script:
 
-The i_info.sql script returns some information at instance-level.  
+The `i_info.sql` script returns some information at instance-level.  
 Those information are the following:  
 1. Current connections to the instance compared to the maximum allowed connections and, of those connections, how many of them are initiated by a client (not automatic processes defined by the DB engine)
 2. Instance's size
@@ -35,7 +35,7 @@ trust_hba_entries   | 2
 
 ## i_settings script
 
-The i_settings.sql script returns some information about the postgresql.conf file.  
+The `i_settings.sql` script returns some information about the postgresql.conf file.  
 The returned information are useful to the DBA for performance and tuning purposes.  
 All the memory and size measurements are manipulated in order to return a human-readable
 output to the user.  
@@ -67,4 +67,33 @@ effective_io_concurrency     | 1
 max_worker_processes         | 8
 max_parallel_workers         | 8
 
+~~~~
+
+## d_info script
+
+The `d_info.sql` script returns some information about the database the client is connected to.  
+Those information are the following:  
+1. Size of the DB in a human-readable format
+2. Current and maximum allowed connection to the DB
+3. Number of tables, indexes, extensions, schemas, publications, subscriptions, views, materialized views and active locks on non-system objects.
+4. Size of tables, indexes and materialized views (as a aggregated sum of the sizes for each relation kind)
+5. Whether the DB is (or is supposed to be) in a logical replication setup  
+A sample output is the following:  
+~~~~
+-[ RECORD 1 ]------+------------
+db_size            | 457 MB
+db_connections     | 1/unlimited
+table_count        | 4
+index_count        | 8
+tables_size        | 284 MB
+indexes_size       | 448 MB
+mviews_size        |
+extension_count    | 1
+schema_count       | 1
+logic_repl_setup   | f
+publication_count  | 0
+subscription_count | 0
+lock_count         | 0
+mview_count        | 0
+view_count         | 1
 ~~~~
