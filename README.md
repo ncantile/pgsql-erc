@@ -66,7 +66,6 @@ effective_cache_size         | 4096 MB
 effective_io_concurrency     | 1
 max_worker_processes         | 8
 max_parallel_workers         | 8
-
 ~~~~
 
 ## d_info script
