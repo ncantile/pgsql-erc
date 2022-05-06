@@ -1,6 +1,20 @@
 WITH
+    --returns DB engine
+z AS (SELECT CASE
+        WHEN (SELECT version()) ILIKE '%enterprisedb%' THEN 'EDB'
+        WHEN (SELECT version()) ILIKE '%edb%' THEN 'EDB'
+        WHEN (SELECT version()) ILIKE '%postgresql%' THEN 'PostgreSQL'
+        ELSE 'Other DB engine' END
+        AS db_engine)
+
+    --returns the DB version
+,a  AS (WITH aa AS (SELECT REGEXP_MATCHES((SELECT version()),'(([0-9]{1,2}\.){1,3}\S*){1}'))
+        SELECT regexp_matches[1] AS version FROM aa) --short version
+
+,za AS (SELECT db_engine||' '||version AS db_version FROM z,a)
+
     --work_mem setting in a human-readable format
- b  AS (SELECT ((setting::int*1024)::bigint) AS work_mem FROM pg_settings WHERE name = 'work_mem')
+,b  AS (SELECT ((setting::int*1024)::bigint) AS work_mem FROM pg_settings WHERE name = 'work_mem')
 
     --archive_mode setting
 ,c  AS (SELECT setting AS archive_mode FROM pg_settings WHERE name = 'archive_mode')
@@ -14,7 +28,9 @@ WITH
     ELSE (SELECT setting::int*1024*1024::bigint FROM pg_settings WHERE name = 'min_wal_size') END AS min_wal_size)
 
     --max_wal_size setting in a human-readable format
-,f  AS (SELECT ((setting::int*1024*1024)::bigint) AS max_wal_size FROM pg_settings WHERE name = 'max_wal_size')
+,f  AS (SELECT CASE
+    WHEN (SELECT COUNT(*) FROM pg_settings WHERE name = 'max_wal_size') = 0 THEN '-404'
+    ELSE (SELECT setting::int*1024*1024::bigint FROM pg_settings WHERE name = 'max_wal_size') END AS max_wal_size)
 
     --max_connections setting
 ,g  AS (SELECT setting AS max_connections FROM pg_settings WHERE name = 'max_connections')
@@ -41,9 +57,13 @@ WITH
 ,n  AS (SELECT setting AS effective_io_concurrency FROM pg_settings WHERE name = 'effective_io_concurrency')
 
     --max_worker_processes setting
-,o  AS (SELECT setting AS max_worker_processes FROM pg_settings WHERE name = 'max_worker_processes')
+,o  AS (SELECT CASE
+    WHEN (SELECT COUNT(*) FROM pg_settings WHERE name = 'max_worker_processes') = 0 THEN '-404'
+    ELSE (SELECT setting FROM pg_settings WHERE name = 'max_worker_processes') END AS max_worker_processes)
 
     --max_parallel_workers setting
-,p  AS (SELECT setting AS max_parallel_workers FROM pg_settings WHERE name = 'max_parallel_workers')
+,p  AS (SELECT CASE
+    WHEN (SELECT COUNT(*) FROM pg_settings WHERE name = 'max_parallel_workers') = 0 THEN '-404'
+    ELSE (SELECT setting FROM pg_settings WHERE name = 'max_parallel_workers') END AS max_parallel_workers)
 
-SELECT * FROM b,c,d,e,f,g,h,i,j,k,l,m,n,o,p;
+SELECT * FROM za,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p;
