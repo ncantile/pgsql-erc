@@ -91,7 +91,8 @@ and the replication is broken) it returns a boolean value*/
 --this query returns the number of largeobjects in the db
 ,b  AS (SELECT COUNT(*) AS lobs_count FROM pg_largeobject_metadata)
 
-,y  AS (SELECT SUM(OCTET_LENGTH(data)) AS lobs_size
+,y  AS (SELECT CASE WHEN (SELECT COUNT(*) FROM pg_largeobject_metadata) = 0 THEN 0 ELSE
+      SUM(OCTET_LENGTH(data)) END AS lobs_size
 FROM pg_largeobject)
 
 SELECT * FROM z,g,i,a,d,f,e,q,n,s,h,b,y,o,j,k,l;
