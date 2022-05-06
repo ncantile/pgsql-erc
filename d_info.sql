@@ -1,4 +1,3 @@
-TODO INSERIRE CASE PER MOSTRARE SIZE 0 SU CAMPI TABLESIZE E INDEXSIZE
 --tested for PostgreSQL 14 and EPAS 14, needs fixing for PostgreSQL 9 and EPAS 10
 --all the data below refer to the db the client is connected to
 WITH
@@ -6,24 +5,33 @@ WITH
  a  AS (SELECT pg_database_size(current_database()) AS db_size)
 
 --this query returns the number of all the non-system tables in the db
-,d  AS (SELECT COUNT(*) AS table_count FROM pg_tables WHERE schemaname NOT LIKE 'pg_%' AND
-                                                            schemaname NOT LIKE 'dbms_%' AND
-                                                            schemaname NOT LIKE 'aq$%' AND
-                                                            schemaname NOT IN ('information_schema', 'sys','msg_prop_t', 'dbo') AND
-                                                            schemaname NOT LIKE 'utl_%' )
+,d  AS (SELECT COUNT(*) AS tables_count FROM pg_tables WHERE schemaname NOT LIKE 'pg_%' AND
+                                                             schemaname NOT LIKE 'dbms_%' AND
+                                                             schemaname NOT LIKE 'aq$%' AND
+                                                             schemaname NOT IN ('information_schema', 'sys','msg_prop_t', 'dbo') AND
+                                                             schemaname NOT LIKE 'utl_%' )
 
 --this query returns the number of all the non-system indexes in the db
-,e  AS (SELECT COUNT(*) AS index_count FROM pg_indexes WHERE schemaname NOT IN ('pg_catalog','sys'))
+,e  AS (SELECT COUNT(*) AS indexes_count FROM pg_indexes WHERE schemaname NOT IN ('pg_catalog','sys'))
 
 --this query returns the size of all the non-system tables in the db
-,f  AS (SELECT SUM(pg_table_size(c.oid)) AS tables_size FROM pg_class AS c
+,f  AS (SELECT CASE WHEN (SELECT COUNT(*) FROM pg_tables WHERE schemaname NOT LIKE 'pg_%' AND
+                                                               schemaname NOT LIKE 'dbms_%' AND
+                                                               schemaname NOT LIKE 'aq$%' AND
+                                                               schemaname NOT IN ('information_schema', 'sys','msg_prop_t', 'dbo') AND
+                                                               schemaname NOT LIKE 'utl_%') = 0 THEN 0 ELSE
+            SUM(pg_table_size(c.oid)) END AS tables_size FROM pg_class AS c
             LEFT JOIN pg_namespace AS n ON (n.oid = c.relnamespace)
             WHERE nspname NOT IN ('pg_catalog', 'information_schema', 'sys') AND
                   c.relkind IN ('r', 't','f','p') AND
                   nspname != 'pg_toast')
 
 --this query returns the size of all the non-system indexes in the db
-,q  AS (SELECT CASE WHEN (SELECT COUNT(*) FROM pg_indexes WHERE schemaname != 'pg_catalog') = 0 THEN 0 ELSE
+,q  AS (SELECT CASE WHEN (SELECT COUNT(*) FROM pg_indexes WHERE schemaname NOT LIKE 'pg_%' AND
+                                                                schemaname NOT LIKE 'dbms_%' AND
+                                                                schemaname NOT LIKE 'aq$%' AND
+                                                                schemaname NOT IN ('information_schema', 'sys','msg_prop_t', 'dbo') AND
+                                                                schemaname NOT LIKE 'utl_%') = 0 THEN 0 ELSE
             SUM(pg_indexes_size(c.oid)::bigint) END AS indexes_size FROM pg_class AS c
             LEFT JOIN pg_namespace AS n ON (n.oid = c.relnamespace)
             WHERE nspname NOT IN ('pg_catalog', 'information_schema', 'sys') AND
@@ -33,7 +41,7 @@ WITH
 --this query returns the size of all the materialized views in the db
 ,s  AS (SELECT CASE WHEN (SELECT COUNT(*) FROM pg_matviews) = 0 THEN 0
             ELSE SUM(pg_total_relation_size(c.oid))
-        END AS mviews_size FROM pg_class AS c
+        END AS matviews_size FROM pg_class AS c
             LEFT JOIN pg_namespace AS n ON (n.oid = c.relnamespace)
             WHERE nspname NOT IN ('pg_catalog', 'information_schema') AND
                   c.relkind = 'm' AND
@@ -45,10 +53,10 @@ else the number of maximum allowed connection is shown*/
 ,g  AS (SELECT datconnlimit FROM pg_database WHERE datname = (SELECT current_database()))
 
 --this query returns the number of installed extensions
-,h  AS (SELECT COUNT(*) AS extension_count FROM pg_extension)
+,h  AS (SELECT COUNT(*) AS extensions_count FROM pg_extension)
 
 --this query returns the number of non-system schemas in the db
-,i  AS (SELECT COUNT(*) AS schema_count FROM pg_namespace WHERE nspname NOT LIKE 'pg_%' AND
+,i  AS (SELECT COUNT(*) AS schemas_count FROM pg_namespace WHERE nspname NOT LIKE 'pg_%' AND
                                                                 nspname NOT LIKE 'dbms_%' AND
                                                                 nspname NOT LIKE 'aq$%' AND
                                                                 nspname NOT IN ('information_schema', 'sys','msg_prop_t', 'dbo') AND
@@ -62,22 +70,28 @@ and the replication is broken) it returns a boolean value*/
                 ELSE false END AS logic_repl_setup)
 
 --this query returns the number of publication in the db
-,k  AS (SELECT COUNT(*) AS publication_count FROM pg_publication)
+,k  AS (SELECT COUNT(*) AS publications_count FROM pg_publication)
 
 --this query returns the number of subscriptions in the db
-,l  AS (SELECT COUNT(*) AS subscription_count FROM pg_subscription)
+,l  AS (SELECT COUNT(*) AS subscriptions_count FROM pg_subscription)
 
 --this query returns the number of materialized views in the db
-,n  AS (SELECT COUNT(*) AS mview_count FROM pg_matviews)
+,n  AS (SELECT COUNT(*) AS matviews_count FROM pg_matviews)
 
 --this query returns the number of non-system views in the db
-,o  AS (SELECT COUNT(*) AS view_count FROM pg_views WHERE schemaname NOT LIKE 'pg_%' AND
+,o  AS (SELECT COUNT(*) AS views_count FROM pg_views WHERE schemaname NOT LIKE 'pg_%' AND
                                                           schemaname NOT LIKE 'dbms_%' AND
                                                           schemaname NOT LIKE 'aq$%' AND
                                                           schemaname NOT IN ('information_schema', 'sys','msg_prop_t', 'dbo') AND
                                                           schemaname NOT LIKE 'utl_%')
 
---this table returns the name of the db
-,z AS (SELECT current_database())
+--this query returns the name of the db
+,z  AS (SELECT current_database() AS db_name)
 
-SELECT * FROM z,g,i,a,d,f,e,q,n,s,o,j,k,l;
+--this query returns the number of largeobjects in the db
+,b  AS (SELECT COUNT(*) AS lobs_count FROM pg_largeobject_metadata)
+
+,y  AS (SELECT SUM(OCTET_LENGTH(data)) AS lobs_size
+FROM pg_largeobject)
+
+SELECT * FROM z,g,i,a,d,f,e,q,n,s,h,b,y,o,j,k,l;
