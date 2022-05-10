@@ -66,4 +66,7 @@ z AS (SELECT CASE
     WHEN (SELECT COUNT(*) FROM pg_settings WHERE name = 'max_parallel_workers') = 0 THEN '-404'
     ELSE (SELECT setting FROM pg_settings WHERE name = 'max_parallel_workers') END AS max_parallel_workers)
 
-SELECT * FROM za,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p;
+    --data directory
+,r AS (SELECT setting AS data_dir FROM pg_settings WHERE name = 'data_directory')
+
+SELECT * FROM za,r,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p;
