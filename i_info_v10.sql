@@ -1,4 +1,4 @@
---tested for PostgreSQL 9 and EPAS 10
+--Tested for PostgreSQL and EPAS 10
 WITH
     --this column shows the maximum allowed connections to the DB
  a  AS (SELECT setting AS max_connections FROM pg_settings WHERE name = 'max_connections')
@@ -9,10 +9,10 @@ WITH
                 SELECT SUM(db_size) AS instance_size FROM totals)
 
     --this column shows the instance's character set
---,r  AS (SELECT character_set_name AS charset FROM information_schema.character_sets)
+,r  AS (SELECT character_set_name AS charset FROM information_schema.character_sets)
 
     /*this column shows whether the instance is in a functioning multi-node, streaming-replication cluster
-    it should be false only if both the "ismaster" and the "isslave" columns return false
+    it should be false only if both the "ismaster" and the "isslave" columns return false*/
 ,s  AS (SELECT CASE
                 WHEN (SELECT COUNT(*) FROM pg_stat_replication ) > 0
                   OR (SELECT COUNT(*) FROM pg_stat_wal_receiver) > 0
@@ -31,9 +31,9 @@ WITH
             THEN true
             ELSE false END AS isslave)
 
-    this column shows the number of nodes that fetch data from the instance in a streaming-replication setup
-    it should have a value >= 1 if the column "ismaster" returns true
-,v  AS (SELECT COUNT(*) AS slaves_num FROM pg_stat_replication)*/
+    /*this column shows the number of nodes that fetch data from the instance in a streaming-replication setup
+    it should have a value >= 1 if the column "ismaster" returns true*/
+,v  AS (SELECT COUNT(*) AS slaves_num FROM pg_stat_replication)
 
     --this column shows the number of users in the instance. it also counts the default user[s]
 ,w  AS (SELECT COUNT(*) AS users_num FROM pg_user)
@@ -47,6 +47,6 @@ WITH
 
     /*this column shows the number of lines in the 'pg_hba.conf' file that are marked
     with the 'trust' authentication method. this value should be 0 for safety reasons*/
---,z  AS (SELECT COUNT(*) AS trust_hba_entries FROM pg_hba_file_rules WHERE auth_method = 'trust')
+,z  AS (SELECT COUNT(*) AS trust_hba_entries FROM pg_hba_file_rules WHERE auth_method = 'trust')
 
-SELECT * FROM a,q,/*r,s,t,u,v,*/w,x,y/*,z*/;
+SELECT * FROM a,q,r,s,t,u,v,w,x,y,z;
