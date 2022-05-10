@@ -1,3 +1,5 @@
+--Tested for PostgreSQL 14 and EPAS 14, compatible with PostgreSQL 9 and EPAS 10.
+--some settings are unavailable (code -404) for some versions.
 WITH
     --returns DB engine
 z AS (SELECT CASE

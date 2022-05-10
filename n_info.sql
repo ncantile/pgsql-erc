@@ -7,9 +7,9 @@
 WITH
 --this query returns the name of the schema
 z  AS (SELECT CASE
-			 WHEN SPLIT_PART(setting,',',1) LIKE '%user%'
+			 WHEN setting LIKE '%user%'
 				THEN (SELECT CURRENT_USER)
-				ELSE SPLIT_PART(setting,',',1)
+				ELSE setting
 			END AS schema_name FROM pg_settings WHERE name = 'search_path')
 
 --this query returns the number of all the tables in the schema
