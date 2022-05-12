@@ -49,4 +49,11 @@ WITH
     with the 'trust' authentication method. this value should be 0 for safety reasons*/
 ,z  AS (SELECT COUNT(*) AS trust_hba_entries FROM pg_hba_file_rules WHERE auth_method = 'trust')
 
-SELECT * FROM a,q,r,s,t,u,v,w,x,y,z;
+    --this column shows whether the wal archiver is working
+,b  AS (SELECT CASE WHEN last_failed_time > current_timestamp - interval '10 minute' THEN false
+                    WHEN (SELECT setting FROM pg_settings WHERE name = 'archive_mode') = 'off' THEN false
+                    ELSE true
+            END AS archive_working
+            FROM pg_stat_archiver)
+
+SELECT * FROM a,q,r,s,t,u,b,v,w,x,y,z;
