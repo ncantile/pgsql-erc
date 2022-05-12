@@ -50,10 +50,10 @@ WITH
 ,z  AS (SELECT COUNT(*) AS trust_hba_entries FROM pg_hba_file_rules WHERE auth_method = 'trust')
 
     --this column shows whether the wal archiver is working
-,b  AS (SELECT CASE WHEN last_failed_time > current_timestamp - interval '10 minute' THEN false
-                    WHEN (SELECT setting FROM pg_settings WHERE name = 'archive_mode') = 'off' THEN false
+,b  AS (SELECT CASE WHEN (SELECT setting FROM pg_settings WHERE name = 'archive_mode') = 'off' THEN false
+                    WHEN last_failed_time > current_timestamp - interval '10 minute' THEN false
                     ELSE true
-            END AS archive_working
+            END AS archiver_working
             FROM pg_stat_archiver)
 
 SELECT * FROM a,q,r,s,t,u,b,v,w,x,y,z;
