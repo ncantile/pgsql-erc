@@ -2,7 +2,7 @@
 --all the data below refer to the db the client is connected to,
 --each schema should be analyzed independently
 
-SET search_path TO <INSERT_SCHEMA_HERE>
+--SET search_path TO <INSERT_SCHEMA_HERE>
 
 WITH
 --this query returns the name of the schema
@@ -40,6 +40,9 @@ z  AS (SELECT CASE
             WHERE nspname = (SELECT schema_name FROM z) AND
                   c.relkind = 'm')
 
+--this query returns the size of all the objects in schema
+,a AS (SELECT (SELECT tables_size + indexes_size + matviews_size FROM f,q,s) AS schema_size)
+
 --this query returns the number of materialized views in the schema
 ,n  AS (SELECT COUNT(*) AS matviews_count FROM pg_matviews WHERE schemaname = (SELECT schema_name FROM z))
 
@@ -49,11 +52,4 @@ z  AS (SELECT CASE
 --this query returns the owner of the schema
 ,p  AS (SELECT o.rolname AS schema_owner FROM pg_namespace AS n JOIN pg_authid AS o ON (n.nspowner = o.oid) WHERE n.nspname = (SELECT schema_name FROM z))
 
---this query returns the number of largeobjects in the schema
---,b  AS (SELECT COUNT(*) AS lobs_count FROM pg_largeobject_metadata)
-
---,y  AS (SELECT CASE WHEN (SELECT COUNT(*) FROM pg_largeobject_metadata) = 0 THEN 0 ELSE
-      --SUM(OCTET_LENGTH(data)) END AS lobs_size
---FROM pg_largeobject)
-
-SELECT * FROM z,p,d,f,e,q,n,s,o;
+SELECT * FROM z,p,a,d,f,e,q,n,s,o;

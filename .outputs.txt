@@ -1,0 +1,84 @@
+.outputs.txt
+
+This file describes which fields for each query are compatible with each version of postgresql/epas
+
+How to read this file:
+-Every query is run against a postgresql v10 and works printing all the fileds
+-fields marked with '°' are not compatible with 9.6 and back
+-fields marked with '*' are not compatible with 9.3 and back
+-fields marked with '#' are not compatible with 9.0 and back
+
+d_info_v10.sql: (9.6°) (9.3*) (9.0#)
+---------------
+db_name            
+db_owner           
+datconnlimit       
+schemas_count      
+db_size            
+tables_count       
+tables_size        
+indexes_count      
+indexes_size       
+matviews_count#     
+matviews_size#      
+extensions_count#   
+lobs_count         
+lobs_size          
+views_count        
+logic_repl_setup*   
+publications_count* 
+subscriptions_count*
+
+===============
+
+i_info_v10.sql: (9.6°) (9.3*) (9.0#)
+---------------
+max_connections  
+instance_size    
+charset#          
+isinreplica*      
+ismaster#         
+isslave*          
+archiver_working* 
+slaves_num#       
+users_num        
+db_num           
+tblsp_num        
+trust_hba_entries°
+
+===============
+
+i_settings.sql: (some of this settings are not present in every version of postgresql, the query will still work for any >=9.0 version but will return the code '-404' where the relative configuration parameter is not supported by the version)
+----------------
+db_version                  
+data_dir                    
+work_mem                    
+archive_mode                
+archive_command             
+min_wal_size                
+max_wal_size                
+max_connections             
+checkpoint_completion_target
+default_statistics_target   
+random_page_cost            
+maintenance_work_mem        
+shared_buffers              
+effective_cache_size        
+effective_io_concurrency    
+max_worker_processes        
+max_parallel_workers        
+
+================
+
+n_info_v10.sql: (9.6°) (9.3*) (9.0#)
+--------------
+schema_name   
+schema_owner
+schema_size  
+tables_count  
+tables_size   
+indexes_count 
+indexes_size  
+matviews_count#
+matviews_size# 
+views_count   
