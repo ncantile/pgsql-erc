@@ -10,7 +10,7 @@ How to read this file:
 
 d_info_v10.sql: (9.6°) (9.3*) (9.0#)
 ---------------
-db_name            
+db_name         
 db_owner           
 datconnlimit       
 schemas_count      
@@ -82,3 +82,82 @@ indexes_size
 matviews_count#
 matviews_size# 
 views_count   
+
+=======================================================================================
+=======================================================================================
+=======================================================================================
+
+d_info_v10.sql:
+---------------
+db_name                   	     char    database name
+db_owner                         char    user that owns the db
+datconnlimit                     int     connection limit to the db
+schemas_count                    int     number of schemas
+db_size                          int     size of the db ()
+tables_count                     int     number of tables
+tables_size                      int     size of all tables (excl. indexes)
+indexes_count                    int     number of indexes
+indexes_size                     int     size of all indexes
+matviews_count                   int     number of materialized views
+matviews_size                    int     size of all materialized views
+extensions_count                 int     number of extensions
+lobs_count                       int     number of large objects
+lobs_size                        int     size of all large objects
+views_count                      int     number of views
+logic_repl_setup                 bool    check if the db has either a subscription or a publication for logical replication, doesn't guarantee that the replication is active and working properly
+publications_count               int     number of publications
+subscriptions_count              int     number of subscriptions
+
+===============
+
+i_info_v10.sql: (9.6°) (9.3*) (9.0#)
+---------------
+max_connections                  int 	 maximum connections to the instance
+instance_size                    int     size of all databases
+charset                     	 char    instance's character set
+isinreplica                      bool    checks whether the instance is in a multi-node setup
+ismaster                         bool    checks whether the instance is a master
+isslave                          bool    checks whether the instance is a slave
+archiver_working                 bool    checks if the wal-archiving process is working
+slaves_num                       int     number of slaves to this instance
+users_num                        int     number of users
+db_num                           int     number of databases
+tblsp_num                        int     number of tablespaces
+trust_hba_entries                int     number of lines in the pg_hba.conf file with 'trust' as access method
+
+===============
+
+i_settings.sql: (some of this settings are not present in every version of postgresql, the query will still work for any >=9.0 version but will return the code '-404' where the relative configuration parameter is not supported by the version)
+----------------
+db_version                       char    postgresql/enterprisedb version
+data_directory                   char    setting in postgresql.conf
+work_mem                         int     setting in postgresql.conf
+archive_mode                     bool    setting in postgresql.conf
+archive_command             	 char    setting in postgresql.conf
+min_wal_size                     int     setting in postgresql.conf
+max_wal_size                     int     setting in postgresql.conf
+max_connections                  int     setting in postgresql.conf
+checkpoint_completion_target     char    setting in postgresql.conf
+default_statistics_target        int     setting in postgresql.conf
+random_page_cost                 real    setting in postgresql.conf 
+maintenance_work_mem             int     setting in postgresql.conf
+shared_buffers                   int     setting in postgresql.conf
+effective_cache_size             int     setting in postgresql.conf
+effective_io_concurrency         int     setting in postgresql.conf
+max_worker_processes             int     setting in postgresql.conf
+max_parallel_workers             int     setting in postgresql.conf
+
+================
+
+n_info_v10.sql: (9.6°) (9.3*) (9.0#)
+--------------
+schema_name                      char    name of the schema
+schema_owner                     char    user that owns the schema
+schema_size                      int     sum of the sizes of indexes, tables and materialized views
+tables_count                     int     number of tables
+tables_size                      int     size of all tables
+indexes_count                    int     number of indexes
+indexes_size                     int     size of all indexes
+matviews_count                   int     number of materialized views
+matviews_size                    int     size of all materialized views
+views_count                      int     number of views
