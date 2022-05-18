@@ -69,6 +69,9 @@ z AS (SELECT CASE
     ELSE (SELECT setting FROM pg_settings WHERE name = 'max_parallel_workers') END AS max_parallel_workers)
 
     --data directory
-,r AS (SELECT setting AS data_dir FROM pg_settings WHERE name = 'data_directory')
+,r  AS (SELECT setting AS data_dir FROM pg_settings WHERE name = 'data_directory')
 
-SELECT * FROM za,r,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p;
+    --port
+,x  AS (SELECT setting AS port FROM pg_settings WHERE name = 'port')
+
+SELECT * FROM za,r,x,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p;
