@@ -2,15 +2,15 @@
 --all the data below refer to the db the client is connected to,
 --each schema should be analyzed independently
 
-SET search_path TO <INSERT_SCHEMA_HERE>
+SET search_path TO <INSERT_SCHEMA_HERE>;
 
 WITH
 --this query returns the name of the schema
 z  AS (SELECT CASE
-			 WHEN setting LIKE '%user%'
-				THEN (SELECT CURRENT_USER)
-				ELSE setting
-			END AS schema_name FROM pg_settings WHERE name = 'search_path')
+                        WHEN setting LIKE '%user%'
+                        THEN (SELECT CURRENT_USER)
+                        ELSE setting
+                        END AS schema_name FROM pg_settings WHERE name = 'search_path')
 
 --this query returns the number of all the tables in the schema
 ,d  AS (SELECT COUNT(*) AS tables_count FROM pg_tables WHERE schemaname = (SELECT schema_name FROM z))

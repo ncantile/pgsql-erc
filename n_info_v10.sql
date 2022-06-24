@@ -2,7 +2,7 @@
 --all the data below refer to the db the client is connected to,
 --each schema should be analyzed independently
 
---SET search_path TO <INSERT_SCHEMA_HERE>
+SET search_path TO <INSERT_SCHEMA_HERE>;
 
 WITH
 --this query returns the name of the schema
